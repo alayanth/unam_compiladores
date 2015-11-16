@@ -8,7 +8,7 @@ int check_id(void);
 
 %}
 
-
+//prueba
 /*Variables de expresiones regulares*/
 
 digito    [0-9]
