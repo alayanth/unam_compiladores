@@ -15,11 +15,13 @@ digito    [0-9]
 letra     [a-zA-Z]
 letrag    [a-zA-Z_]
 hexa	    [a-fA-F0-9]
-exponent  ([Ee][+-]?{D}+)
-id        {letra}({letra}|{digito})*
+exponent  ([Ee][+-]?{digito}+)
+sufijo 	  [fFlL]
+id        {letrag}({letrag}|{digito})*
 real      {digito}*"."{digito}+
 entero    {digito}+
 caracter  \'([\x20-\x21\x23-\xFE])?\'
+cteFloat  {digito}*("."({digito}+{exponent}{sufijo}?))?
 
 %%
 
@@ -47,6 +49,7 @@ caracter  \'([\x20-\x21\x23-\xFE])?\'
 
 
 {L}({L}|{D})*		{ count(); return IDENTIFIER; }
+
 
 "("       { count(); return LPAR; }
 ")"       { count(); return RPAR; }
@@ -76,6 +79,10 @@ caracter  \'([\x20-\x21\x23-\xFE])?\'
 "/="      { count(); return DIVEQ; }
 "*="      { count(); return MULEQ; }
 "%="      { count(); return MODEQ; }
+{cteFloat} { RETURN CTEFLOAT;}
+{entero}	{RETURN ENTERO;}
+{id}		{ RETURN ID;}
+{hexa}		{RETURN HEXA;}
 
 [ \t\v\n\f]   { }
 .			{ printf("Lexical error D=");}
@@ -99,4 +106,3 @@ void count(void)
 		else
 			column++;
 }
-
