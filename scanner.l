@@ -54,7 +54,7 @@ cteFloat  {digito}*("."({digito}+{exponent}{sufijo}?))?
 "("       { count(); return LPAR; }
 ")"       { count(); return RPAR; }
 "["       { count(); return LCOR; }
-"]"       { count(); return LCOR; }
+"]"       { count(); return RCOR; }
 "{"       { count(); return LLLA; }
 "}"       { count(); return RLLA; }
 "++"      { count(); return MAS2; }
@@ -79,6 +79,9 @@ cteFloat  {digito}*("."({digito}+{exponent}{sufijo}?))?
 "/="      { count(); return DIVEQ; }
 "*="      { count(); return MULEQ; }
 "%="      { count(); return MODEQ; }
+";"		  { count(); return PC; }
+","		  { count(); return COMA; }
+":"		  { count(); return DP; }
 {cteFloat} { RETURN CTEFLOAT;}
 {entero}	{RETURN ENTERO;}
 {id}		{ RETURN ID;}
