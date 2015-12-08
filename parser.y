@@ -7,7 +7,7 @@
 %token MAS2 MENOS2 ADM 
 %token MUL DIV MOD 
 %token MAS MENOS
-%token MENQ MENEQ MAY MAYEQ 
+%token MENORQ MENOREQ MAYORQ MAYOREQ 
 %token EQUAL2 NOTEQ
 %token AND 
 %token OR 
@@ -50,10 +50,18 @@ T 	: INT
 	| Ts
 	;
 
-Ts 	: STRUCT ID LLLA Cs RLLA
-	| STRUCT LLLA Cs RLLA
-	| STRUCT ID
+Ts 	: STRUCT Tsp
 	;
+
+Tsp : ID TSpp
+	| LLLA Cs RLLA
+	;
+
+Tspp : LLLA Cs RLLA
+	 | //añadir simbolo epsilon
+	 ;
+
+
 
 Cs 	: Cs Dv
 	| Dv
@@ -99,7 +107,7 @@ S 	: Se
 	| Sret
 	| B
 	| Simp
-	| Sels
+	| Slee
 	;
 
 Se 	: E PC
@@ -126,11 +134,116 @@ Lc 	: Lc Sc
 	| Sc
 	;
 
-Sc 	: CASE INT DP S Sbr
+Sc 	: CASE INT DP S Sbr // revisar INT dado que en la producción lo marca como entero
 	;
 
+Cd 	: DEFAULT DP S Sbr
+	| //añadir simbolo epsilon.
+	;
+
+Sfor : FOR LPAR E PC E PC Sinc RPAR S
+	 ;
+
+Sbr : BREAK PC
+	;
+
+Sinc : ID MAS2
+	 | ID MENOS2
+	 ;
+
+Simp : PRINT LPAR E RPAR
+	 ;
+
+Slee : Scon LPAR ID RPAR
+	 ;
 
 
+Sret : RETURN Sretp
+	 ;
+
+Sretp : PC
+	  | E PC
+	  ;
+
+E 	:  V Opasig E
+	| Es
+	;
+
+Opasig : EQUAL 
+	   | MASEQ
+	   | MENOSEQ
+	   | MUL
+	   | DIVEQ
+	   | MODEQ
+	   ;
+
+V 	: ID Varr
+	| //añadir simbolo epsilon.
+	;
+
+Varr : LCOR E RCOR
+	 | //añadir simbolo epsilon.
+	 ;
+
+Es 	: Es Esp 
+	| Op
+	;
+
+Esp : Oprel Op
+	| Oplog Op
+	;
+
+Oplog : AND
+	  | OR
+	  ;
+
+Oprel : MENOREQ
+	  | MAYOREQ
+	  | MENORQ
+	  | MAYORQ
+	  | EQUAL2
+	  | NOTEQ
+	  ;
+
+Op 	: Op Opadd Tr
+	| Tr
+	;
+
+Opadd : MAS
+	  | MENOS
+	  ;
+
+Tr 	: Tr  Opmul F 
+	| F
+	;
+
+Opmul : MUL
+	  | DIV
+	  | MOD
+	  ;
+
+F 	: V
+	| Ll
+	| LPAR E RPAR
+	| //entero
+	| //flotante
+	| //caracter
+	| //cadena
+	| //dobleprecisión
+	| ADM E
+	| MENOS E
+	;
+
+Ll 	: ID LPAR Arg RPAR
+	;
+
+Arg : Larg
+	| //añadir epsilon.
+	;
+
+Larg : Larg COMA E
+	 | E
+	 ;
 
 %%
 #include <stdio.h>
