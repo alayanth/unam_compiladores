@@ -22,11 +22,13 @@ real      {digito}*"."{digito}+
 entero    {digito}+
 caracter  \'([\x20-\x21\x23-\xFE])?\'
 cteFloat  {digito}*("."({digito}+{exponent}{sufijo}?))?
-
+diagonal "/"
+asterisco "*"
+salto 		{\n}  //para que el comentario1 reconozca que es solo en una linea
 %%
 
-"/*"			     { }
-"//"[^\n]*     { }
+"/*"({letrag}*{digito}*)* "*/" { }
+"//"[^\n]	   { }
 
 "int"          { count(); return INT;}
 "float"        { count(); return FLOAT;}
@@ -86,6 +88,8 @@ cteFloat  {digito}*("."({digito}+{exponent}{sufijo}?))?
 {entero}	{RETURN ENTERO;}
 {id}		{ RETURN ID;}
 {hexa}		{RETURN HEXA;}
+comentario1 {diagonal}{diagonal}({letra}*{numero}*)* 
+
 
 [ \t\v\n\f]   { }
 .			{ printf("Lexical error D=");}
