@@ -213,26 +213,14 @@ void yyerror(const char *s)
 	fprintf(stderr, "*** %s\n", s);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-   
-    char NomArch[50];
-    printf("Ingrese el nombre del archivo para analizar \n");
-    gets(NomArch);
-    
-    if((yyin=fopen(NomArch,"rt"))==NULL)
-    
-        printf("No se puede abrir el archivo: %s ",NomArch);
+	if(argc>0)
+		yyin=fopen(argv[1],"r");
+	else
+		yyin=stdin;
 
-        
-    else 
-
-
-        printf("\n");
-        yyparse();
-     
-
-return  0;
-
+	yylex();
+	return 0;
 }
 
