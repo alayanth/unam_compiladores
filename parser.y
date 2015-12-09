@@ -1,3 +1,10 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+void yyerror(const char *s);
+%}
+
+
 %token	ID NUM
 %token	INT FLOAT DOUBLE CHAR VOID STRUCT
 %token	IF ELSE WHILE DO SWITCH CASE DEFAULT BREAK FOR PRINT
@@ -7,249 +14,225 @@
 %token MAS2 MENOS2 ADM 
 %token MUL DIV MOD 
 %token MAS MENOS
-%token MENORQ MENOREQ MAYORQ MAYOREQ 
+%token MENQ MENEQ MAY MAYEQ 
 %token EQUAL2 NOTEQ
 %token AND 
 %token OR 
 %token EQUAL MASEQ MENOSEQ DIVEQ MULEQ MODEQ
+%token CTEFLOAT ENTERO HEXA COMA CARACTER CADENA
 
 %start program
 %%
 
-program : Ld
+program : ld
 		;
 
-Ld 	: Ld D 
-   	| D
+ld 	: ld d 
+   	| d
    	;
 
-D 	: Dv
-	| Df
-	| Ts
+d 	: dv
+	| df
+	| ts
 	;
 
-Dv 	: T Lv PC
+dv 	: t lv PC
 	;
 
-Lv	: Lv COMA L
-	| L
+lv	: lv COMA l
+	| l
 	;
 
-L 	: ID A
+l 	: ID a
 	;
 
-A 	: LCOR NUM RCOR A 
-	| //añadir simbolo epsilon.
+a 	: LCOR NUM RCOR a 
+	| 
 	;
 
-T 	: INT
+t 	: INT
 	| FLOAT
 	| DOUBLE
 	| CHAR
 	| VOID
-	| Ts
+	| ts
 	;
 
-Ts 	: STRUCT Tsp
+ts 	: STRUCT tsp;
+tsp : ID tspp
+	| LLLA cs RLLA;
+tspp : LLLA cs RLLA
+	 | e;
+
+cs 	: cs dv
+	| dv
 	;
 
-Tsp : ID TSpp
-	| LLLA Cs RLLA
+df 	: t ID LPAR pms RPAR b
 	;
 
-Tspp : LLLA Cs RLLA
-	 | //añadir simbolo epsilon
-	 ;
-
-
-
-Cs 	: Cs Dv
-	| Dv
-	;
-
-Df 	: T ID LPAR Pms RPAR B
-	;
-
-Pms : Lpms
+pms : lpms
 	| VOID
 	;
 
-Lpms : Lpms COMA Pm
-	 | Pm
+lpms : lpms COMA pm
+	 | pm
 	 ;
 
-Pm 	: T ID Apm
+pm 	: t ID apm
 	;
 
-Apm : LCOR RCOR Apm
+apm : LCOR RCOR apm
 	| //añadir simbolo epsilon.
 	;
 
-B 	: LLLA D 	//duda con esta producción
-	| Ls RLLA
+b 	: LLLA dl ls RLLA
 	;
 
-Dl 	: Dl Dv
+dl 	: dl dv
 	| //añadir simbolo epsilon.
 	;
 
-Ls 	: Ls S
+ls 	: ls s
 	| //añadir simbolo epsilon.
 	;
 
-S 	: Se
-	| Sif
-	| Swh
-	| Sdo
-	| Ssw
-	| Sfor
-	| Sbr
-	| Sret
-	| B
-	| Simp
-	| Slee
+s 	: se
+	| sif
+	| swh
+	| sdo
+	| ssw
+	| sfor
+	| sbr
+	| sret
+	| b
+	| simp
+	| slee
 	;
 
-Se 	: E PC
+se 	: e PC
 	| PC
 	;
 
-Sif : IF LPAR E RPAR S S Sels
+sif : IF LPAR e RPAR s s sels
 	;
 
-Sels : ELSE S 
+sels : ELSE s 
 	 | //añadir simbolo epsilon.
 	 ;
 
-Swh : WHILE LPAR E RPAR S
+swh : WHILE LPAR e RPAR s
 	;
 
-Sdo : DO S WHILE LPAR E RPAR
+sdo : DO s WHILE LPAR e RPAR
 	;
 
-Ssw : SWITCH LPAR ID RPAR LLLA Lc Cd RLLA
+ssw : SWITCH LPAR ID RPAR LLLA lc cd RLLA;
+
+lc 	: lc sc 
+	| sc
 	;
 
-Lc 	: Lc Sc 
-	| Sc
+sc 	: CASE ENTERO DP s sbr
 	;
 
-Sc 	: CASE INT DP S Sbr // revisar INT dado que en la producción lo marca como entero
-	;
-
-Cd 	: DEFAULT DP S Sbr
-	| //añadir simbolo epsilon.
-	;
-
-Sfor : FOR LPAR E PC E PC Sinc RPAR S
-	 ;
-
-Sbr : BREAK PC
-	;
-
-Sinc : ID MAS2
-	 | ID MENOS2
-	 ;
-
-Simp : PRINT LPAR E RPAR
-	 ;
-
-Slee : Scon LPAR ID RPAR
-	 ;
+cd : DEFAULT DP s sbr
+	| ;
 
 
-Sret : RETURN Sretp
-	 ;
+sfor : FOR LPAR e PC e PC sinc RPAR s;
 
-Sretp : PC
-	  | E PC
-	  ;
+sbr : BREAK PC;
 
-E 	:  V Opasig E
-	| Es
-	;
+sinc : ID MAS2
+     | ID MENOS2;
 
-Opasig : EQUAL 
-	   | MASEQ
-	   | MENOSEQ
-	   | MUL
-	   | DIVEQ
-	   | MODEQ
-	   ;
+simp : PRINT LPAR e RPAR PC;
 
-V 	: ID Varr
-	| //añadir simbolo epsilon.
-	;
+sret : RETURN sretp;
 
-Varr : LCOR E RCOR
-	 | //añadir simbolo epsilon.
-	 ;
+sretp : PC | e PC;
 
-Es 	: Es Esp 
-	| Op
-	;
+e : v opasing e 
+  | es;
 
-Esp : Oprel Op
-	| Oplog Op
-	;
+opasing : EQUAL | MASEQ | MENOSEQ | MUL | DIVEQ | MODEQ ; 
 
-Oplog : AND
-	  | OR
-	  ;
+v : ID varr | ;
 
-Oprel : MENOREQ
-	  | MAYOREQ
-	  | MENORQ
-	  | MAYORQ
-	  | EQUAL2
-	  | NOTEQ
-	  ;
+varr : LCOR e RCOR varr
+	 | ;
+es : es esp
+   | op;
 
-Op 	: Op Opadd Tr
-	| Tr
-	;
+ esp : oprel op
+     | oplog op;
+ oplog : AND
+       | OR;
+oprel : MENEQ | MAYEQ | MENQ | MAY | EQUAL2 | NOTEQ;
 
-Opadd : MAS
-	  | MENOS
-	  ;
+op : op opadd tr
+   | tr;
 
-Tr 	: Tr  Opmul F 
-	| F
-	;
+opadd : MAS | MENOS;
 
-Opmul : MUL
-	  | DIV
-	  | MOD
-	  ;
+tr : tr opmul f
+   | f;
 
-F 	: V
-	| Ll
-	| LPAR E RPAR
-	| //entero
-	| //flotante
-	| //caracter
-	| //cadena
-	| //dobleprecisión
-	| ADM E
-	| MENOS E
-	;
+opmul : MUL
+      | DIV
+      | MOD;
 
-Ll 	: ID LPAR Arg RPAR
-	;
+f : v
+  | ll
+  | LPAR e RPAR
+  | ENTERO
+  | CTEFLOAT
+  | CARACTER
+  | CADENA
+  | ADM e
+  | MENOS e;
 
-Arg : Larg
-	| //añadir epsilon.
-	;
+ll : ID LPAR arg RPAR;
 
-Larg : Larg COMA E
-	 | E
-	 ;
+arg : larg ;     //epsilon
+
+larg : larg COMA e
+     | e ;
+
+slee : SCAN LPAR ID RPAR PC;
+
+
 
 %%
-#include <stdio.h>
+extern FILE *yyin;
 
 void yyerror(const char *s)
 {
 	fflush(stdout);
 	fprintf(stderr, "*** %s\n", s);
 }
+
+int main(int argc, char *argv[])
+{
+   
+    char NomArch[50];
+    printf("Ingrese el nombre del archivo para analizar \n");
+    gets(NomArch);
+    
+    if((yyin=fopen(NomArch,"rt"))==NULL)
+    
+        printf("No se puede abrir el archivo: %s ",NomArch);
+
+        
+    else 
+
+
+        printf("\n");
+        yyparse();
+     
+
+return  0;
+
+}
+

@@ -1,14 +1,15 @@
 %{
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "y.tab.h"
+
 
 void count(void);
 int check_id(void);
 
 %}
 
-//prueba
 /*Variables de expresiones regulares*/
 
 digito    [0-9]
@@ -22,13 +23,12 @@ real      {digito}*"."{digito}+
 entero    {digito}+
 caracter  \'([\x20-\x21\x23-\xFE])?\'
 cteFloat  {digito}*("."({digito}+{exponent}{sufijo}?))?
-diagonal "/"
-asterisco "*"
-salto 		{\n}  //para que el comentario1 reconozca que es solo en una linea
+cadena 	   ({letrag}*{caracter}*{digito}*)+
+
 %%
 
-"/*"({letrag}*{digito}*)* "*/" { }
-"//"[^\n]	   { }
+
+"//"[^\n]* {}
 
 "int"          { count(); return INT;}
 "float"        { count(); return FLOAT;}
@@ -50,7 +50,6 @@ salto 		{\n}  //para que el comentario1 reconozca que es solo en una linea
 "struct"       { count(); return STRUCT;}
 
 
-{L}({L}|{D})*		{ count(); return IDENTIFIER; }
 
 
 "("       { count(); return LPAR; }
@@ -67,10 +66,10 @@ salto 		{\n}  //para que el comentario1 reconozca que es solo en una linea
 "%"       { count(); return MOD; }
 "+"       { count(); return MAS; }
 "-"       { count(); return MENOS; }
-"<"       { count(); return MENORQ; }
-"<="      { count(); return MENOREQ; }
-">"       { count(); return MAYORQ; }
-">="      { count(); return MAYOREQ; }
+"<"       { count(); return MENQ; }
+"<="      { count(); return MENEQ; }
+">"       { count(); return MAY; }
+">="      { count(); return MAYEQ; }
 "=="      { count(); return EQUAL2; }
 "!="      { count(); return NOTEQ; }
 "&&"      { count(); return AND; }
@@ -84,11 +83,14 @@ salto 		{\n}  //para que el comentario1 reconozca que es solo en una linea
 ";"		  { count(); return PC; }
 ","		  { count(); return COMA; }
 ":"		  { count(); return DP; }
-{cteFloat} { RETURN CTEFLOAT;}
-{entero}	{RETURN ENTERO;}
-{id}		{ RETURN ID;}
-{hexa}		{RETURN HEXA;}
-comentario1 {diagonal}{diagonal}({letra}*{numero}*)* 
+{entero}	{return ENTERO;}
+{hexa}		{return HEXA;}
+{cteFloat} { return CTEFLOAT;}
+{id}		{return ID;}
+{caracter}	{return CARACTER;}
+{cadena}	{return CADENA;}
+
+
 
 
 [ \t\v\n\f]   { }
@@ -113,3 +115,5 @@ void count(void)
 		else
 			column++;
 }
+
+
