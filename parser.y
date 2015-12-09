@@ -1,3 +1,10 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+void yyerror(const char *s);
+%}
+
+
 %token	ID NUM
 %token	INT FLOAT DOUBLE CHAR VOID STRUCT
 %token	IF ELSE WHILE DO SWITCH CASE DEFAULT BREAK FOR PRINT
@@ -12,131 +19,220 @@
 %token AND 
 %token OR 
 %token EQUAL MASEQ MENOSEQ DIVEQ MULEQ MODEQ
+%token CTEFLOAT ENTERO HEXA COMA CARACTER CADENA
 
 %start program
 %%
 
-program : Ld
+program : ld
 		;
 
-Ld 	: Ld D 
-   	| D
+ld 	: ld d 
+   	| d
    	;
 
-D 	: Dv
-	| Df
-	| Ts
+d 	: dv
+	| df
+	| ts
 	;
 
-Dv 	: T Lv PC
+dv 	: t lv PC
 	;
 
-Lv	: Lv COMA L
-	| L
+lv	: lv COMA l
+	| l
 	;
 
-L 	: ID A
+l 	: ID a
 	;
 
-A 	: LCOR NUM RCOR A 
-	| //añadir simbolo epsilon.
+a 	: LCOR NUM RCOR a 
+	| 
 	;
 
-T 	: INT
+t 	: INT
 	| FLOAT
 	| DOUBLE
 	| CHAR
 	| VOID
-	| Ts
+	| ts
 	;
 
-Ts 	: STRUCT ID LLLA Cs RLLA
-	| STRUCT LLLA Cs RLLA
-	| STRUCT ID
+ts 	: STRUCT tsp;
+tsp : ID tspp
+	| LLLA cs RLLA;
+tspp : LLLA cs RLLA
+	 | e;
+
+cs 	: cs dv
+	| dv
 	;
 
-Cs 	: Cs Dv
-	| Dv
+df 	: t ID LPAR pms RPAR b
 	;
 
-Df 	: T ID LPAR Pms RPAR B
-	;
-
-Pms : Lpms
+pms : lpms
 	| VOID
 	;
 
-Lpms : Lpms COMA Pm
-	 | Pm
+lpms : lpms COMA pm
+	 | pm
 	 ;
 
-Pm 	: T ID Apm
+pm 	: t ID apm
 	;
 
-Apm : LCOR RCOR Apm
+apm : LCOR RCOR apm
 	| //añadir simbolo epsilon.
 	;
 
-B 	: LLLA D 	//duda con esta producción
-	| Ls RLLA
+b 	: LLLA dl ls RLLA
 	;
 
-Dl 	: Dl Dv
+dl 	: dl dv
 	| //añadir simbolo epsilon.
 	;
 
-Ls 	: Ls S
+ls 	: ls s
 	| //añadir simbolo epsilon.
 	;
 
-S 	: Se
-	| Sif
-	| Swh
-	| Sdo
-	| Ssw
-	| Sfor
-	| Sbr
-	| Sret
-	| B
-	| Simp
-	| Sels
+s 	: se
+	| sif
+	| swh
+	| sdo
+	| ssw
+	| sfor
+	| sbr
+	| sret
+	| b
+	| simp
+	| slee
 	;
 
-Se 	: E PC
+se 	: e PC
 	| PC
 	;
 
-Sif : IF LPAR E RPAR S S Sels
+sif : IF LPAR e RPAR s s sels
 	;
 
-Sels : ELSE S 
+sels : ELSE s 
 	 | //añadir simbolo epsilon.
 	 ;
 
-Swh : WHILE LPAR E RPAR S
+swh : WHILE LPAR e RPAR s
 	;
 
-Sdo : DO S WHILE LPAR E RPAR
+sdo : DO s WHILE LPAR e RPAR
 	;
 
-Ssw : SWITCH LPAR ID RPAR LLLA Lc Cd RLLA
+ssw : SWITCH LPAR ID RPAR LLLA lc cd RLLA;
+
+lc 	: lc sc 
+	| sc
 	;
 
-Lc 	: Lc Sc 
-	| Sc
+sc 	: CASE ENTERO DP s sbr
 	;
 
-Sc 	: CASE INT DP S Sbr
-	;
+cd : DEFAULT DP s sbr
+	| ;
 
+
+sfor : FOR LPAR e PC e PC sinc RPAR s;
+
+sbr : BREAK PC;
+
+sinc : ID MAS2
+     | ID MENOS2;
+
+simp : PRINT LPAR e RPAR PC;
+
+sret : RETURN sretp;
+
+sretp : PC | e PC;
+
+e : v opasing e 
+  | es;
+
+opasing : EQUAL | MASEQ | MENOSEQ | MUL | DIVEQ | MODEQ ; 
+
+v : ID varr | ;
+
+varr : LCOR e RCOR varr
+	 | ;
+es : es esp
+   | op;
+
+ esp : oprel op
+     | oplog op;
+ oplog : AND
+       | OR;
+oprel : MENEQ | MAYEQ | MENQ | MAY | EQUAL2 | NOTEQ;
+
+op : op opadd tr
+   | tr;
+
+opadd : MAS | MENOS;
+
+tr : tr opmul f
+   | f;
+
+opmul : MUL
+      | DIV
+      | MOD;
+
+f : v
+  | ll
+  | LPAR e RPAR
+  | ENTERO
+  | CTEFLOAT
+  | CARACTER
+  | CADENA
+  | ADM e
+  | MENOS e;
+
+ll : ID LPAR arg RPAR;
+
+arg : larg ;     //epsilon
+
+larg : larg COMA e
+     | e ;
+
+slee : SCAN LPAR ID RPAR PC;
 
 
 
 %%
-#include <stdio.h>
+extern FILE *yyin;
 
 void yyerror(const char *s)
 {
 	fflush(stdout);
 	fprintf(stderr, "*** %s\n", s);
 }
+
+int main(int argc, char *argv[])
+{
+   
+    char NomArch[50];
+    printf("Ingrese el nombre del archivo para analizar \n");
+    gets(NomArch);
+    
+    if((yyin=fopen(NomArch,"rt"))==NULL)
+    
+        printf("No se puede abrir el archivo: %s ",NomArch);
+
+        
+    else 
+
+
+        printf("\n");
+        yyparse();
+     
+
+return  0;
+
+}
+
