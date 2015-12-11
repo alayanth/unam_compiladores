@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist.h"
+
 void yyerror(const char *s);
 %}
 
@@ -51,11 +52,27 @@ a 	: LCOR NUM RCOR a
 	| 
 	;
 
-t 	: INT
+t 	: INT {	tabla_simbolos = (List*)malloc(sizeof(List));
+		insert_end("int", INT,tabla_simbolos);
+		print(tabla_simbolos);}
 	| FLOAT
+	{	tabla_simbolos = (List*)malloc(sizeof(List));
+		insert_end("float", FLOAT,tabla_simbolos);
+		print(tabla_simbolos);}
 	| DOUBLE
+	{	tabla_simbolos = (List*)malloc(sizeof(List));
+		insert_end("double", DOUBLE,tabla_simbolos);
+		print(tabla_simbolos);}
 	| CHAR
+	{
+		tabla_simbolos = (List*)malloc(sizeof(List));
+		insert_end("char", CHAR,tabla_simbolos);
+		print(tabla_simbolos);
+	}
 	| VOID
+		{tabla_simbolos = (List*)malloc(sizeof(List));
+		insert_end("void", VOID,tabla_simbolos);
+		print(tabla_simbolos);}
 	| ts
 	;
 
@@ -207,6 +224,7 @@ slee : SCAN LPAR ID RPAR PC;
 
 %%
 extern FILE *yyin;
+extern List *tabla_simbolos;
 
 void yyerror(const char *s)
 {
